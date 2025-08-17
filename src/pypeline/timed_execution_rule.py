@@ -16,19 +16,28 @@ LOG = logging.getLogger(PYPELINE_LOGGER)
 class TimedExecutionRule:
     """An execution rule specifies the scheduling of a periodical action.
     By design for this particular use, there is a strong time resolution
-    focus on the minute to day of the week range
+    focus on the minute to day of the week range.
 
     It hinges on defining a function that can resolve next execution time, with signature
     <last_execution: datetime | None>, <current_time: datetime> -> <next_execution: datetime>
+
+    Usage : Initialize via one of the `from_*` class methods, then use `is_up` to check if the time for next execution is up and `mark_executed` after execution
     """
 
     next_datetime_generator: Callable[[datetime | None, datetime], datetime]
-
+    """Resolves next execution time from last execution time and current time. Computed at initialization by `from_*` class methods."""
     next_execution: datetime
+    """Stores the last retruned value of `next_datetime_generator` to avoid calling it again"""
 
-    CRON_LITE_STYLE_RULE_PATTERNS = [
-        re.compile(r"(\d{1,2},)+\d+|\d+|\*")  # minute/hour/day of week(0-6)
-    ]
+    CRON_LITE_STYLE_RULE_PATTERN = re.compile(
+        r" ".join(
+            [
+                r"((?:[0-5]?\d,)*[0-5]?\d|\*)",  # minute in hour
+                r"((?:[0-1]?\d,|2[0-4],)*(?:[0-1]?\d|2[0-4])|\*)",  # hour in day
+                r"((?:[0-6],)*[0-6]|(?:[A-Z]{3},)*[A-Z]{3}|\*)",  # day of the week
+            ]
+        )
+    )
     CRON_LITE_DAY_OF_WEEK = {
         "SUN": 0,
         "MON": 1,
@@ -51,7 +60,7 @@ class TimedExecutionRule:
         self.next_execution = next_datetime_generator(None, datetime.now())
 
     @classmethod
-    def from_simple_frequency_macro(
+    def __from_simple_frequency_macro(
         cls, simple_frequency_macro: str
     ) -> "TimedExecutionRule | None":
         """Decodes a simple frequency macro"""
@@ -74,13 +83,17 @@ class TimedExecutionRule:
         return TimedExecutionRule(simple_frequency_next_datetime_generator)
 
     @classmethod
-    def from_cronlite(cls, cron_lite_rule: str) -> "TimedExecutionRule | None":
+    def __from_cronlite(cls, cron_lite_rule: str) -> "TimedExecutionRule | None":
         """See CRON_lite.md for specifications and syntax"""
 
         # Check if cronlite rule
+        _match = cls.CRON_LITE_STYLE_RULE_PATTERN.match(cron_lite_rule)
+        if _match is None:
+            return None
+
         _parts = cron_lite_rule.split()
         if len(_parts) != 3:
-            LOG.debug("Not a cronlite rule: '%s'", cron_lite_rule)
+            LOG.warning("Not a cronlite rule: '%s'", cron_lite_rule)
             return None
 
         def parse_cronlite_part(
@@ -166,13 +179,13 @@ class TimedExecutionRule:
     def from_expression(cls, expression: str) -> "TimedExecutionRule | None":
         """Main expression decoder function"""
 
-        for parser in (cls.from_simple_frequency_macro, cls.from_cronlite):
+        for parser in (cls.__from_simple_frequency_macro, cls.__from_cronlite):
             if (res := parser(expression)) is not None:
                 return res
         return None
 
-    def compute_next_execution(self, current_time: datetime) -> datetime:
-        """Assumes the value in self.next_execution is being marked as executed, thus is actually the last execution time"""
+    def __compute_next_execution(self, current_time: datetime) -> datetime:
+        """Private method; Assumes the value in self.next_execution is being marked as executed, thus is actually the 'last execution time'"""
         _last_execution = self.next_execution
         return self.next_datetime_generator(_last_execution, current_time)
 
@@ -183,7 +196,9 @@ class TimedExecutionRule:
     def mark_executed(self, current_time: datetime) -> None:
         """To be called when the associated action is executed, to update the 'next execution' timer"""
         _last_execution = self.next_execution
-        self.next_execution = self.compute_next_execution(current_time)
-        LOG.info(
-            "execute: next_execution=%s -> %s", _last_execution, self.next_execution
+        self.next_execution = self.__compute_next_execution(current_time)
+        LOG.debug(
+            "mark_executed called, switching next_execution=%s -> %s",
+            _last_execution,
+            self.next_execution,
         )

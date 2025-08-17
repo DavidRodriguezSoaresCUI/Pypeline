@@ -3,7 +3,7 @@
 echo Rebuilding source directory
 find ./source -mindepth 1 -delete 2>/dev/null
 rmdir ./source
-sphinx-apidoc -f --maxdepth 4 --separate --doc-project "pypeline" --doc-author "DavidRodriguezSoaresCUI" --full -o source ../src/{project_name}
+sphinx-apidoc -f --maxdepth 4 --separate --doc-project "drs.pypeline" --doc-author "DavidRodriguezSoaresCUI" --full -o source ../src/pypeline
 python3 sphinx-patch-conf.py
 
 echo Rebuilding HTML build

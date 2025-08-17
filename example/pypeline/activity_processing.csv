@@ -1,0 +1,12 @@
+# Activity Processing
+# ===================
+#
+# Empty rows and anything written after a # character will be ignored
+#
+# This configuration file must contain an entry for each activity activity type
+# and worker that may want to process them, in order to specify which which
+# workers may process activities and how much parallelism is allowed.
+#
+activityType,workerID,parallelProcesses
+SumActivity,ExampleWorker,1
+ExceptionActivity,ExampleWorker,1

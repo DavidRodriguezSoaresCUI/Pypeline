@@ -123,7 +123,7 @@ class RuleEngine:
 
         else:
             configuration_file.write_text(
-                ("\n".join(meta_header) if meta_header else "")
+                (meta_header if meta_header else "")
                 + ",".join(c.label for c in columns)
                 + "\n"
                 + (
@@ -136,7 +136,7 @@ class RuleEngine:
                 encoding="utf-8",
             )
             LOG.warning(
-                "New configuration file %s created. Please end execution and fill it before re-running your program.",
+                "New configuration file %s created. Please fill it before re-running your program.",
                 configuration_file,
             )
 

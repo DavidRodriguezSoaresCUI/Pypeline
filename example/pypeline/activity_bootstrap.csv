@@ -1,0 +1,15 @@
+# Activity bootstrap
+# ==================
+#
+# Empty rows and anything written after a # character will be ignored
+#
+# This configuration file must contain an entry for each activity activity type,
+# worker that may bootstrap process them, and optionally the data to put in the
+# activity file.
+#
+# The macro $PYPELINE_DIR is available in the activityData field to inject
+# the root directory of activities.
+#
+activityType,workerID,bootstrapRule,onFirstCycle,activityData
+SumActivity,ExampleWorker,@every 1m,true,"{""sum_up_to"": 10000}"
+ExceptionActivity,ExampleWorker,@every 1m,true,"{""wait_before_raise"": 2}"

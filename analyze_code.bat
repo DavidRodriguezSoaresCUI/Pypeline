@@ -26,4 +26,4 @@ pylint %FILE_LIST% >>%report_file%
 ECHO Analyzing with FLAKE8
 ECHO ==== FLAKE8 ==== >>%report_file%
 :: Disable rule with --extend-ignore (ex: --extend-ignore=E501)
-python -m flake8 %FILE_LIST% >>%report_file%
+python -m flake8 --extend-ignore=E501,E203 %FILE_LIST% >>%report_file%

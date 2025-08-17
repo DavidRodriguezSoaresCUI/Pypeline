@@ -1,0 +1,1 @@
+rm -rf build htmlcov src/drs.pypeline.egg-info drs/pypeline_DavidRodriguezSoaresCUI.egg-info analyze_code.report.txt .pytest_cache .mypy_cache

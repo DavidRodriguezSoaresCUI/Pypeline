@@ -1,6 +1,7 @@
 import unittest
 from datetime import datetime, timedelta
-from pypeline.pypeline import TimedExecutionRule
+
+from .pypeline import TimedExecutionRule
 
 
 def datetime_difference_under_a_second(

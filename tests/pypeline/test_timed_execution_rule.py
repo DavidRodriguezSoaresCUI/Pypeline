@@ -1,14 +1,12 @@
-from collections import namedtuple
-import json
 import logging
-from pathlib import Path
-from pprint import pformat
-from typing import Any, Callable, Dict, Iterable
 import unittest
+from collections import namedtuple
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Callable, Dict
 
-from .pypeline import TimedExecutionRule, add_file_handler
-
+from pypeline.timed_execution_rule import TimedExecutionRule
+from pypeline.utils import add_file_handler
 
 LOG = logging.getLogger(__file__)
 add_file_handler(LOG, Path(__file__ + ".log"))

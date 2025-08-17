@@ -20,4 +20,8 @@ python3.11 -m pylint --disable=C0301,W0718,C0114 $FILE_LIST >>${report_file}
 echo Analyzing with FLAKE8
 echo ==== FLAKE8 ==== >>${report_file}
 # Disable rule with --extend-ignore (ex: --extend-ignore=E501)
-python3.11 -m flake8 --extend-ignore=E501 $FILE_LIST >>${report_file}
+python3.11 -m flake8 --extend-ignore=E501,E203 $FILE_LIST >>${report_file}
+
+echo Analyzing with vulture
+echo ==== vulture ==== >>${report_file}
+python3.11 -m vulture $FILE_LIST ./vulture_whitelist.py >>${report_file}

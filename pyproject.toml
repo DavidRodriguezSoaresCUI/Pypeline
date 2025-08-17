@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pypeline-DavidRodriguezSoaresCUI"
-version = "0.0.1"
+name = "drs.pypeline"
+version = "0.0.2.dev1"
 authors = [
   { name="DavidRodriguezSoaresCUI", email="fireblaze904+pypeline@gmail.com" },
 ]
@@ -17,7 +17,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-  "DRSlib-DavidRodriguezSoaresCUI>=0.8.0"
+  "drs.drslib>=0.10.0",
+  "ruamel.yaml"
 ]
 
 [project.urls]
@@ -33,7 +34,8 @@ analyse = [
   "mypy",
   "bandit",
   "pylint",
-  "flake8"
+  "flake8",
+  "vulture"
 ]
 documentation = [
   "furo>=2023",
